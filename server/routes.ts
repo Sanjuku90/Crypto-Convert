@@ -84,9 +84,9 @@ export async function registerRoutes(
 
   // Seed Data
   if ((await storage.getExchangeRates()).length === 0) {
-    await storage.createExchangeRate({ pair: "XOF_USDT", rate: "0.002", feePercent: "1.5", minAmount: "5000", maxAmount: "1000000" }); // 1/500 = 0.002
+    await storage.createExchangeRate({ pair: "XOF_USDT", rate: "500", feePercent: "1.5", minAmount: "5000", maxAmount: "1000000" }); 
     await storage.createExchangeRate({ pair: "USDT_XOF", rate: "600", feePercent: "1.5", minAmount: "10", maxAmount: "2000" });
-    await storage.createExchangeRate({ pair: "XOF_BTC", rate: "0.00000002", feePercent: "2", minAmount: "10000", maxAmount: "5000000" });
+    await storage.createExchangeRate({ pair: "XOF_BTC", rate: "60000000", feePercent: "2", minAmount: "10000", maxAmount: "5000000" });
   }
 
   return httpServer;

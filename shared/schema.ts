@@ -10,7 +10,7 @@ import { users } from "./models/auth";
 export const exchange_rates = pgTable("exchange_rates", {
   id: serial("id").primaryKey(),
   pair: text("pair").notNull(), // e.g., "XOF_USDT", "USDT_XOF"
-  rate: decimal("rate", { precision: 14, scale: 8 }).notNull(),
+  rate: decimal("rate", { precision: 12, scale: 2 }).notNull(), // Now represents XOF for 1 USD (e.g. 500.00)
   feePercent: decimal("fee_percent", { precision: 5, scale: 2 }).default("0"),
   minAmount: decimal("min_amount", { precision: 12, scale: 2 }).default("0"),
   maxAmount: decimal("max_amount", { precision: 12, scale: 2 }).default("0"),

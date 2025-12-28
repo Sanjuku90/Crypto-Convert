@@ -3,6 +3,16 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
+export const users = pgTable("users", {
+  id: serial("id").primaryKey(),
+  email: varchar("email").unique().notNull(),
+  password: varchar("password").notNull(), // hashed password
+  firstName: varchar("first_name"),
+  lastName: varchar("last_name"),
+  createdAt: timestamp("created_at").defaultNow(),
+  verified: boolean("verified").default(false),
+});
+
 export const exchange_rates = pgTable("exchange_rates", {
   id: serial("id").primaryKey(),
   pair: text("pair").notNull(), // e.g., "XOF_USDT", "USDT_XOF"
@@ -15,7 +25,7 @@ export const exchange_rates = pgTable("exchange_rates", {
 
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id"), // Optional: kept for backwards compatibility
+  userId: integer("user_id").references(() => users.id),
   type: text("type").notNull(), // 'BUY', 'SELL', 'SWAP'
   amountIn: decimal("amount_in", { precision: 12, scale: 2 }).notNull(),
   currencyIn: text("currency_in").notNull(), // 'XOF', 'USDT'
@@ -28,8 +38,18 @@ export const transactions = pgTable("transactions", {
   createdAt: timestamp("created_at").defaultNow(),
 });
 
+export const insertUserSchema = createInsertSchema(users).omit({ id: true, createdAt: true, verified: true }).extend({
+  email: z.string().email("Email invalide"),
+  password: z.string().min(6, "Le mot de passe doit contenir au moins 6 caractères"),
+  firstName: z.string().optional(),
+  lastName: z.string().optional(),
+});
+
 export const insertExchangeRateSchema = createInsertSchema(exchange_rates).omit({ id: true, updatedAt: true });
 export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true, createdAt: true, status: true });
+
+export type User = typeof users.$inferSelect;
+export type InsertUser = z.infer<typeof insertUserSchema>;
 
 export type ExchangeRate = typeof exchange_rates.$inferSelect;
 export type InsertExchangeRate = z.infer<typeof insertExchangeRateSchema>;

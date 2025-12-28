@@ -3,11 +3,70 @@ import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { api } from "@shared/routes";
 import { z } from "zod";
+import { insertUserSchema } from "@shared/schema";
 
 export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
+  // Authentication Routes
+  app.post("/api/auth/signup", async (req, res) => {
+    try {
+      const input = insertUserSchema.parse(req.body);
+      
+      // Check if email already exists
+      const existingUser = await storage.getUserByEmail(input.email);
+      if (existingUser) {
+        return res.status(400).json({ message: "Cet email est déjà utilisé" });
+      }
+
+      const user = await storage.createUser(input);
+      
+      // Link any unlinked transactions to this user
+      await storage.linkUserTransactions(user.id, user.email);
+      
+      // Return user without password
+      res.status(201).json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdAt: user.createdAt,
+      });
+    } catch (e) {
+      if (e instanceof z.ZodError) return res.status(400).json(e.errors);
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+  });
+
+  app.post("/api/auth/login", async (req, res) => {
+    try {
+      const { email, password } = z.object({
+        email: z.string().email(),
+        password: z.string(),
+      }).parse(req.body);
+
+      const user = await storage.getUserByPassword(email, password);
+      if (!user) {
+        return res.status(401).json({ message: "Email ou mot de passe invalide" });
+      }
+
+      // Link any unlinked transactions to this user
+      await storage.linkUserTransactions(user.id, user.email);
+
+      // Return user without password
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdAt: user.createdAt,
+      });
+    } catch (e) {
+      if (e instanceof z.ZodError) return res.status(400).json(e.errors);
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+  });
   // Exchange Rates
   app.get(api.rates.list.path, async (req, res) => {
     const rates = await storage.getExchangeRates();

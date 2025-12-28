@@ -11,6 +11,8 @@ import Dashboard from "@/pages/Dashboard";
 import NewTransaction from "@/pages/NewTransaction";
 import History from "@/pages/History";
 import Admin from "@/pages/Admin";
+import Login from "@/pages/Login";
+import Signup from "@/pages/Signup";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -20,6 +22,8 @@ function Router() {
       <main className="flex-1">
         <Switch>
           <Route path="/" component={Home} />
+          <Route path="/login" component={Login} />
+          <Route path="/signup" component={Signup} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/convert" component={NewTransaction} />
           <Route path="/history" component={History} />

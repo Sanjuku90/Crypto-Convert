@@ -3,10 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowRight, ShieldCheck, Zap, Globe, Smartphone, Bitcoin } from "lucide-react";
 import { Link } from "wouter";
-import { useAuth } from "@/hooks/use-auth";
 
 export default function Home() {
-  const { user } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -36,7 +34,7 @@ export default function Home() {
               </p>
               
               <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Link href={user ? "/dashboard" : "/login"}>
+                <Link href="/dashboard">
                   <Button size="lg" variant="gradient" className="text-lg px-8">
                     Commencer maintenant
                     <ArrowRight className="ml-2 w-5 h-5" />
@@ -170,7 +168,7 @@ export default function Home() {
           <p className="text-slate-300 max-w-2xl mx-auto mb-10 text-lg">
             Créez votre compte en quelques secondes et effectuez votre première transaction dès aujourd'hui.
           </p>
-          <Link href={user ? "/convert" : "/login"}>
+          <Link href="/convert">
             <Button size="lg" className="bg-emerald-500 hover:bg-emerald-600 text-white border-none text-lg px-10 rounded-full">
               Créer un compte gratuit
             </Button>

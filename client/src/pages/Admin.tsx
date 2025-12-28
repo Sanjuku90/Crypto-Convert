@@ -1,20 +1,13 @@
 import { useTransactions, useUpdateTransactionStatus } from "@/hooks/use-exchange";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
 import { useLocation } from "wouter";
 import { Loader2, CheckCircle, XCircle, Clock } from "lucide-react";
 
 export default function Admin() {
-  const { user, isLoading: authLoading } = useAuth();
   const [, setLocation] = useLocation();
   const { data: transactions, isLoading } = useTransactions();
   const updateStatus = useUpdateTransactionStatus();
-
-  // Basic role check (In real app, backend enforces this)
-  if (!authLoading && (user?.email !== "admin@bwari.com" && user?.id !== "admin")) {
-    return <div className="p-8 text-center text-red-500">Accès non autorisé</div>;
-  }
 
   const handleStatusUpdate = (id: number, status: 'COMPLETED' | 'CANCELLED' | 'PROCESSING') => {
     updateStatus.mutate({ id, status });
@@ -54,7 +47,7 @@ export default function Admin() {
                    {transactions?.map((tx) => (
                      <tr key={tx.id} className="hover:bg-muted/10">
                        <td className="px-4 py-3 font-medium">#{tx.id}</td>
-                       <td className="px-4 py-3 text-muted-foreground truncate max-w-[150px]">{tx.userId}</td>
+                       
                        <td className="px-4 py-3">
                          <div className="font-medium">{tx.amountIn} {tx.currencyIn}</div>
                          <div className="text-xs text-muted-foreground">→ {tx.amountOut} {tx.currencyOut}</div>

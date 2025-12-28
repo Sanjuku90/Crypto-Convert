@@ -1,7 +1,6 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { setupAuth, registerAuthRoutes } from "./replit_integrations/auth";
 import { api } from "@shared/routes";
 import { z } from "zod";
 
@@ -9,10 +8,6 @@ export async function registerRoutes(
   httpServer: Server,
   app: Express
 ): Promise<Server> {
-  // Setup Auth
-  await setupAuth(app);
-  registerAuthRoutes(app);
-
   // Exchange Rates
   app.get(api.rates.list.path, async (req, res) => {
     const rates = await storage.getExchangeRates();
@@ -20,8 +15,6 @@ export async function registerRoutes(
   });
 
   app.post(api.rates.update.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
-    
     try {
       const input = api.rates.update.input.parse(req.body);
       const rate = await storage.createExchangeRate(input);
@@ -34,33 +27,22 @@ export async function registerRoutes(
 
   // Transactions
   app.get(api.transactions.list.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
-    const userId = (req.user as any).claims.sub;
-    
-    // For MVP, simply return user's transactions. 
-    // Admin features can be added by checking specific user IDs later.
-    const transactions = await storage.getTransactions(userId);
+    const transactions = await storage.getTransactions();
     res.json(transactions);
   });
 
   app.get(api.transactions.get.path, async (req, res) => {
-     if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
      const id = parseInt(req.params.id);
      const transaction = await storage.getTransaction(id);
      if (!transaction) return res.status(404).json({ message: "Not found" });
-     
-     const userId = (req.user as any).claims.sub;
-     if (transaction.userId !== userId) return res.status(403).json({ message: "Forbidden" });
      
      res.json(transaction);
   });
 
   app.post(api.transactions.create.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     try {
       const input = api.transactions.create.input.parse(req.body);
-      const userId = (req.user as any).claims.sub;
-      const transaction = await storage.createTransaction({ ...input, userId });
+      const transaction = await storage.createTransaction(input);
       res.status(201).json(transaction);
     } catch (e) {
       if (e instanceof z.ZodError) return res.status(400).json(e.errors);
@@ -69,7 +51,6 @@ export async function registerRoutes(
   });
 
   app.patch(api.transactions.updateStatus.path, async (req, res) => {
-    if (!req.isAuthenticated()) return res.status(401).send("Unauthorized");
     try {
       const id = parseInt(req.params.id);
       const { status } = api.transactions.updateStatus.input.parse(req.body);

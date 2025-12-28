@@ -1,28 +1,20 @@
-import { users, type User, exchange_rates, type ExchangeRate, type InsertExchangeRate, transactions, type Transaction, type InsertTransaction } from "@shared/schema";
+import { exchange_rates, type ExchangeRate, type InsertExchangeRate, transactions, type Transaction, type InsertTransaction } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
-  // Users
-  getUser(id: string): Promise<User | undefined>;
-  
   // Exchange Rates
   getExchangeRates(): Promise<ExchangeRate[]>;
   createExchangeRate(rate: InsertExchangeRate): Promise<ExchangeRate>;
   
   // Transactions
   createTransaction(transaction: InsertTransaction): Promise<Transaction>;
-  getTransactions(userId?: string): Promise<Transaction[]>;
+  getTransactions(): Promise<Transaction[]>;
   getTransaction(id: number): Promise<Transaction | undefined>;
   updateTransactionStatus(id: number, status: string): Promise<Transaction | undefined>;
 }
 
 export class DatabaseStorage implements IStorage {
-  async getUser(id: string): Promise<User | undefined> {
-    const [user] = await db.select().from(users).where(eq(users.id, id));
-    return user;
-  }
-
   // Exchange Rates
   async getExchangeRates(): Promise<ExchangeRate[]> {
     return await db.select().from(exchange_rates);
@@ -39,10 +31,7 @@ export class DatabaseStorage implements IStorage {
     return newTransaction;
   }
 
-  async getTransactions(userId?: string): Promise<Transaction[]> {
-    if (userId) {
-      return await db.select().from(transactions).where(eq(transactions.userId, userId)).orderBy(desc(transactions.createdAt));
-    }
+  async getTransactions(): Promise<Transaction[]> {
     return await db.select().from(transactions).orderBy(desc(transactions.createdAt));
   }
 

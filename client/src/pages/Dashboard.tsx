@@ -1,4 +1,3 @@
-import { useAuth } from "@/hooks/use-auth";
 import { useTransactions, useRates } from "@/hooks/use-exchange";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -8,7 +7,6 @@ import { format } from "date-fns";
 import { fr } from "date-fns/locale";
 
 export default function Dashboard() {
-  const { user } = useAuth();
   const { data: transactions, isLoading: isLoadingTx } = useTransactions();
   const { data: rates } = useRates();
 
@@ -20,7 +18,7 @@ export default function Dashboard() {
       <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
           <h1 className="text-3xl font-bold font-display text-slate-900 dark:text-white">
-            Bonjour, {user?.firstName || 'Utilisateur'} 👋
+            Tableau de bord
           </h1>
           <p className="text-muted-foreground mt-1">
             Voici un aperçu de vos activités récentes.
@@ -117,7 +115,7 @@ export default function Dashboard() {
                           {tx.type === 'BUY' ? 'Achat' : 'Vente'} {tx.currencyOut}
                         </p>
                         <p className="text-xs text-muted-foreground">
-                          {tx.created_at ? format(new Date(tx.created_at), "d MMMM yyyy, HH:mm", { locale: fr }) : '-'}
+                          {tx.createdAt ? format(new Date(tx.createdAt), "d MMMM yyyy, HH:mm", { locale: fr }) : '-'}
                         </p>
                       </div>
                     </div>

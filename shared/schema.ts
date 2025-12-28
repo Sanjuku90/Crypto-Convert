@@ -3,10 +3,6 @@ import { createInsertSchema } from "drizzle-zod";
 import { z } from "zod";
 import { relations } from "drizzle-orm";
 
-// Export auth models
-export * from "./models/auth";
-import { users } from "./models/auth";
-
 export const exchange_rates = pgTable("exchange_rates", {
   id: serial("id").primaryKey(),
   pair: text("pair").notNull(), // e.g., "XOF_USDT", "USDT_XOF"
@@ -19,7 +15,6 @@ export const exchange_rates = pgTable("exchange_rates", {
 
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
-  userId: varchar("user_id").notNull().references(() => users.id),
   type: text("type").notNull(), // 'BUY', 'SELL', 'SWAP'
   amountIn: decimal("amount_in", { precision: 12, scale: 2 }).notNull(),
   currencyIn: text("currency_in").notNull(), // 'XOF', 'USDT'
@@ -31,13 +26,6 @@ export const transactions = pgTable("transactions", {
   proofUrl: text("proof_url"),
   createdAt: timestamp("created_at").defaultNow(),
 });
-
-export const transactionsRelations = relations(transactions, ({ one }) => ({
-  user: one(users, {
-    fields: [transactions.userId],
-    references: [users.id],
-  }),
-}));
 
 export const insertExchangeRateSchema = createInsertSchema(exchange_rates).omit({ id: true, updatedAt: true });
 export const insertTransactionSchema = createInsertSchema(transactions).omit({ id: true, createdAt: true, status: true });

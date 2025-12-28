@@ -75,14 +75,14 @@ export default function History() {
 
                   {/* Date (Hidden on mobile) */}
                   <div className="hidden md:block text-sm text-muted-foreground">
-                    {tx.created_at ? format(new Date(tx.created_at), "dd MMM yyyy, HH:mm", { locale: fr }) : '-'}
+                    {tx.createdAt ? format(new Date(tx.createdAt), "dd MMM yyyy, HH:mm", { locale: fr }) : '-'}
                   </div>
 
                   {/* Status */}
                   <div className="text-right">
                     <StatusBadge status={tx.status} />
                     <p className="md:hidden text-xs text-muted-foreground mt-1">
-                      {tx.created_at ? format(new Date(tx.created_at), "dd/MM", { locale: fr }) : '-'}
+                      {tx.createdAt ? format(new Date(tx.createdAt), "dd/MM", { locale: fr }) : '-'}
                     </p>
                   </div>
                 </div>

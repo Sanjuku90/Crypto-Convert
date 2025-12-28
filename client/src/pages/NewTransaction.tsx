@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { useRates, useCreateTransaction } from "@/hooks/use-exchange";
-import { useAuth } from "@/hooks/use-auth";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -15,7 +14,6 @@ const CURRENCIES = [
 ];
 
 export default function NewTransaction() {
-  const { user } = useAuth();
   const [, setLocation] = useLocation();
   const { toast } = useToast();
   const { data: rates } = useRates();
@@ -41,7 +39,6 @@ export default function NewTransaction() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!user) return;
     if (!amount || !paymentDetails) {
       toast({ title: "Erreur", description: "Veuillez remplir tous les champs", variant: "destructive" });
       return;
@@ -49,14 +46,12 @@ export default function NewTransaction() {
 
     try {
       await createTx.mutateAsync({
-        userId: user.id,
         type: fromCurrency === 'XOF' ? 'BUY' : 'SELL', // Simplified logic
         amountIn: amount,
         currencyIn: fromCurrency,
         amountOut: estimatedOutput,
         currencyOut: toCurrency,
         paymentDetails: { addressOrNumber: paymentDetails },
-        status: "PENDING"
       });
       
       toast({ 

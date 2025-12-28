@@ -43,7 +43,7 @@ export default function Login() {
           title: "Bienvenue",
           description: `Connexion réussie en tant que ${user.email}`,
         });
-        setLocation("/dashboard");
+        setLocation("/account");
       } else {
         const error = await response.json();
         toast({
@@ -125,10 +125,8 @@ export default function Login() {
           <div className="mt-6 space-y-3 text-sm text-center">
             <p className="text-muted-foreground">
               Pas encore de compte ?{" "}
-              <Link href="/signup">
-                <a className="text-primary hover:underline font-medium" data-testid="link-signup">
-                  S'inscrire
-                </a>
+              <Link href="/signup" className="text-primary hover:underline font-medium" data-testid="link-signup">
+                S'inscrire
               </Link>
             </p>
           </div>

@@ -50,7 +50,7 @@ export default function Signup() {
           title: "Compte créé avec succès",
           description: `Bienvenue ${user.email}! Vos anciennes opérations ont été associées à votre compte.`,
         });
-        setLocation("/dashboard");
+        setLocation("/account");
       } else {
         const error = await response.json();
         toast({
@@ -166,10 +166,8 @@ export default function Signup() {
           <div className="mt-6 space-y-3 text-sm text-center">
             <p className="text-muted-foreground">
               Déjà inscrit ?{" "}
-              <Link href="/login">
-                <a className="text-primary hover:underline font-medium" data-testid="link-login">
-                  Se connecter
-                </a>
+              <Link href="/login" className="text-primary hover:underline font-medium" data-testid="link-login">
+                Se connecter
               </Link>
             </p>
           </div>

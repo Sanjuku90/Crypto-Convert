@@ -73,12 +73,12 @@ export function Navbar() {
             </>
           ) : (
             <>
-              <Link href="/login">
+              <Link href="/login" asChild>
                 <Button variant="outline" size="sm" data-testid="button-login-nav">
                   Se connecter
                 </Button>
               </Link>
-              <Link href="/signup">
+              <Link href="/signup" asChild>
                 <Button size="sm" data-testid="button-signup-nav">
                   S'inscrire
                 </Button>
@@ -132,7 +132,7 @@ export function Navbar() {
                   </>
                 ) : (
                   <>
-                    <Link href="/login">
+                    <Link href="/login" asChild>
                       <Button 
                         variant="outline" 
                         className="w-full" 
@@ -142,7 +142,7 @@ export function Navbar() {
                         Se connecter
                       </Button>
                     </Link>
-                    <Link href="/signup">
+                    <Link href="/signup" asChild>
                       <Button 
                         className="w-full" 
                         onClick={() => setIsOpen(false)}

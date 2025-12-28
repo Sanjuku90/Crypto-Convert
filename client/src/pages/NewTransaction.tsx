@@ -42,7 +42,7 @@ export default function NewTransaction() {
     if (fromCurrency === 'XOF' && toCurrency === 'USDT') {
       toast({ 
         title: "Indisponible", 
-        description: "Les conversions XOF vers USDT seront de nouveau disponibles le 1er janvier.", 
+        description: "Les conversions XOF vers USDT seront de nouveau disponibles le 30 décembre.", 
         variant: "destructive" 
       });
       return;
@@ -159,7 +159,7 @@ export default function NewTransaction() {
               </div>
               {fromCurrency === 'XOF' && toCurrency === 'USDT' && (
                 <p className="text-xs text-red-500 font-medium">
-                  Cette conversion sera de nouveau disponible le 1er janvier.
+                  Cette conversion sera de nouveau disponible le 30 décembre.
                 </p>
               )}
             </div>

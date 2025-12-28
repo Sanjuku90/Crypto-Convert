@@ -15,6 +15,7 @@ export const exchange_rates = pgTable("exchange_rates", {
 
 export const transactions = pgTable("transactions", {
   id: serial("id").primaryKey(),
+  userId: varchar("user_id"), // Optional: kept for backwards compatibility
   type: text("type").notNull(), // 'BUY', 'SELL', 'SWAP'
   amountIn: decimal("amount_in", { precision: 12, scale: 2 }).notNull(),
   currencyIn: text("currency_in").notNull(), // 'XOF', 'USDT'

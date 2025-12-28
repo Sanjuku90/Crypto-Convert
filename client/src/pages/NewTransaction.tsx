@@ -56,7 +56,9 @@ export default function NewTransaction() {
       
       toast({ 
         title: "Transaction Créée !", 
-        description: "Votre demande a été enregistrée avec succès.",
+        description: fromCurrency === 'USDT' 
+          ? "Demande enregistrée. N'oubliez pas d'envoyer vos USDT à l'adresse indiquée." 
+          : "Votre demande a été enregistrée avec succès.",
         className: "bg-emerald-500 text-white border-none"
       });
       
@@ -171,6 +173,26 @@ export default function NewTransaction() {
                 value={paymentDetails}
                 onChange={(e) => setPaymentDetails(e.target.value)}
               />
+              {fromCurrency === 'USDT' && (
+                <div className="mt-4 p-4 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-xl">
+                  <p className="text-sm font-semibold text-amber-800 dark:text-amber-300 mb-2">Instruction de paiement :</p>
+                  <p className="text-xs text-amber-700 dark:text-amber-400 mb-2">
+                    Veuillez envoyer exactement <span className="font-bold">{amount || '0'} USDT (TRC20)</span> à l'adresse ci-dessous :
+                  </p>
+                  <div 
+                    className="bg-white dark:bg-black/40 p-3 rounded border font-mono text-xs break-all select-all cursor-pointer hover:bg-slate-50 dark:hover:bg-slate-900 transition-colors"
+                    onClick={() => {
+                      navigator.clipboard.writeText("TYjqWPHHpSrkEnkfNjueLpxeYevo6fwdg4");
+                      toast({ title: "Copié !", description: "L'adresse a été copiée dans le presse-papier." });
+                    }}
+                  >
+                    TYjqWPHHpSrkEnkfNjueLpxeYevo6fwdg4
+                  </div>
+                  <p className="text-[10px] text-amber-600 dark:text-amber-500 mt-2">
+                    * La transaction sera traitée dès confirmation sur la blockchain.
+                  </p>
+                </div>
+              )}
             </div>
 
             <Button 

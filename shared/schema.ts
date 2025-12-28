@@ -11,6 +11,7 @@ export const users = pgTable("users", {
   lastName: varchar("last_name"),
   createdAt: timestamp("created_at").defaultNow(),
   verified: boolean("verified").default(false),
+  status: text("status").default("PENDING"), // PENDING, APPROVED, REJECTED
 });
 
 export const exchange_rates = pgTable("exchange_rates", {

@@ -43,7 +43,14 @@ export default function Login() {
           title: "Bienvenue",
           description: `Connexion réussie en tant que ${user.email}`,
         });
-        setLocation("/account");
+        // Redirect based on verification status
+        if (user.status === "PENDING") {
+          setLocation("/pending-verification");
+        } else if (user.status === "APPROVED") {
+          setLocation("/account");
+        } else {
+          setLocation("/");
+        }
       } else {
         const error = await response.json();
         toast({

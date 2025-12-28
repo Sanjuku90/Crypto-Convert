@@ -47,10 +47,10 @@ export default function Signup() {
         const user = await response.json();
         localStorage.setItem("user", JSON.stringify(user));
         toast({
-          title: "Compte créé avec succès",
-          description: `Bienvenue ${user.email}! Vos anciennes opérations ont été associées à votre compte.`,
+          title: "Compte créé - En attente de validation",
+          description: `Bienvenue ${user.email}! Un administrateur validera votre inscription.`,
         });
-        setLocation("/account");
+        setLocation("/pending-verification");
       } else {
         const error = await response.json();
         toast({

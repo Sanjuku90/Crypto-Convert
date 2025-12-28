@@ -14,6 +14,7 @@ import Admin from "@/pages/Admin";
 import Login from "@/pages/Login";
 import Signup from "@/pages/Signup";
 import Account from "@/pages/Account";
+import PendingVerification from "@/pages/PendingVerification";
 import NotFound from "@/pages/not-found";
 
 function Router() {
@@ -25,6 +26,7 @@ function Router() {
           <Route path="/" component={Home} />
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
+          <Route path="/pending-verification" component={PendingVerification} />
           <Route path="/account" component={Account} />
           <Route path="/dashboard" component={Dashboard} />
           <Route path="/convert" component={NewTransaction} />

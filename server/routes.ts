@@ -61,6 +61,48 @@ export async function registerRoutes(
         firstName: user.firstName,
         lastName: user.lastName,
         createdAt: user.createdAt,
+        status: user.status,
+      });
+    } catch (e) {
+      if (e instanceof z.ZodError) return res.status(400).json(e.errors);
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+  });
+
+  // Admin routes for user validation
+  app.get("/api/admin/pending-users", async (req, res) => {
+    try {
+      const users = await storage.getPendingUsers();
+      res.json(users.map(u => ({
+        id: u.id,
+        email: u.email,
+        firstName: u.firstName,
+        lastName: u.lastName,
+        createdAt: u.createdAt,
+        status: u.status,
+      })));
+    } catch (e) {
+      res.status(500).json({ message: "Erreur serveur" });
+    }
+  });
+
+  app.patch("/api/admin/users/:id/verify", async (req, res) => {
+    try {
+      const id = parseInt(req.params.id);
+      const { status } = z.object({
+        status: z.enum(["APPROVED", "REJECTED"]),
+      }).parse(req.body);
+
+      const user = await storage.updateUserStatus(id, status);
+      if (!user) return res.status(404).json({ message: "Utilisateur non trouvé" });
+
+      res.json({
+        id: user.id,
+        email: user.email,
+        firstName: user.firstName,
+        lastName: user.lastName,
+        createdAt: user.createdAt,
+        status: user.status,
       });
     } catch (e) {
       if (e instanceof z.ZodError) return res.status(400).json(e.errors);

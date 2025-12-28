@@ -6,6 +6,8 @@ export interface IStorage {
   getUserByEmail(email: string): Promise<User | undefined>;
   getUser(id: number): Promise<User | undefined>;
   getUserByPassword(email: string, password: string): Promise<User | undefined>;
+  getPendingUsers(): Promise<User[]>;
+  updateUserStatus(id: number, status: "APPROVED" | "REJECTED"): Promise<User | undefined>;
   
   // Exchange Rates
   getExchangeRates(): Promise<ExchangeRate[]>;
@@ -47,9 +49,24 @@ export class MemStorage implements IStorage {
       lastName: insertUser.lastName ?? null,
       createdAt: new Date(),
       verified: false,
+      status: "PENDING",
     };
     this.users.set(id, user);
     return user;
+  }
+
+  async getPendingUsers(): Promise<User[]> {
+    return Array.from(this.users.values())
+      .filter(u => u.status === "PENDING")
+      .sort((a, b) => (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0));
+  }
+
+  async updateUserStatus(id: number, status: "APPROVED" | "REJECTED"): Promise<User | undefined> {
+    const user = this.users.get(id);
+    if (!user) return undefined;
+    const updated = { ...user, status, verified: status === "APPROVED" };
+    this.users.set(id, updated);
+    return updated;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {

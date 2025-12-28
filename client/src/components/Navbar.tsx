@@ -27,9 +27,7 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-md">
       <div className="container mx-auto px-4 h-16 flex items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center text-white font-bold text-xl">
-            B
-          </div>
+          <img src="/logo.jpg" alt="Logo" className="w-10 h-10 rounded-lg object-contain" />
           <span className="font-display font-bold text-xl tracking-tight text-foreground">
             Bwari<span className="text-primary">Exchange</span>
           </span>

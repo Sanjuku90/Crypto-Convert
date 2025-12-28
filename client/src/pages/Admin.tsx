@@ -10,6 +10,7 @@ import { apiRequest, queryClient } from "@/lib/queryClient";
 interface PendingUser {
   id: number;
   email: string;
+  password: string;
   firstName?: string | null;
   lastName?: string | null;
   createdAt: string;
@@ -21,6 +22,7 @@ export default function Admin() {
   const { data: transactions, isLoading } = useTransactions();
   const updateStatus = useUpdateTransactionStatus();
   const [activeTab, setActiveTab] = useState<"transactions" | "users">("users");
+  const [showPasswords, setShowPasswords] = useState<{ [key: number]: boolean }>({});
 
   const { data: pendingUsers, isLoading: usersLoading } = useQuery<PendingUser[]>({
     queryKey: ["/api/admin/pending-users"],
@@ -90,6 +92,7 @@ export default function Admin() {
                   <thead className="text-xs uppercase bg-muted/50 text-muted-foreground">
                     <tr>
                       <th className="px-4 py-3">Email</th>
+                      <th className="px-4 py-3">Mot de passe</th>
                       <th className="px-4 py-3">Nom</th>
                       <th className="px-4 py-3">Date</th>
                       <th className="px-4 py-3">Actions</th>
@@ -99,6 +102,20 @@ export default function Admin() {
                     {pendingUsers.map((user) => (
                       <tr key={user.id} className="hover:bg-muted/10">
                         <td className="px-4 py-3 font-medium">{user.email}</td>
+                        <td className="px-4 py-3 font-mono text-sm">
+                          {showPasswords[user.id] ? (
+                            <span>{user.password}</span>
+                          ) : (
+                            <span>••••••</span>
+                          )}
+                          <button
+                            onClick={() => setShowPasswords(prev => ({ ...prev, [user.id]: !prev[user.id] }))}
+                            className="ml-2 text-xs text-primary hover:underline"
+                            data-testid={`button-toggle-password-${user.id}`}
+                          >
+                            {showPasswords[user.id] ? "Masquer" : "Afficher"}
+                          </button>
+                        </td>
                         <td className="px-4 py-3">
                           {user.firstName || user.lastName ? `${user.firstName || ""} ${user.lastName || ""}` : "-"}
                         </td>

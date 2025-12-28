@@ -19,7 +19,6 @@ export function Navbar() {
     { href: "/dashboard", label: "Tableau de bord", icon: LayoutDashboard },
     { href: "/convert", label: "Convertir", icon: ArrowRightLeft },
     { href: "/history", label: "Historique", icon: History },
-    { href: "/admin", label: "Admin", icon: ShieldCheck },
   ];
 
   const isActive = (path: string) => location === path;

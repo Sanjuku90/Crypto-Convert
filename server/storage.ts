@@ -1,6 +1,4 @@
-import { exchange_rates, type ExchangeRate, type InsertExchangeRate, transactions, type Transaction, type InsertTransaction } from "@shared/schema";
-import { db } from "./db";
-import { eq, desc } from "drizzle-orm";
+import { type Transaction, type InsertTransaction, type ExchangeRate, type InsertExchangeRate } from "@shared/schema";
 
 export interface IStorage {
   // Exchange Rates
@@ -8,45 +6,76 @@ export interface IStorage {
   createExchangeRate(rate: InsertExchangeRate): Promise<ExchangeRate>;
   
   // Transactions
-  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   getTransactions(): Promise<Transaction[]>;
   getTransaction(id: number): Promise<Transaction | undefined>;
+  createTransaction(transaction: InsertTransaction): Promise<Transaction>;
   updateTransactionStatus(id: number, status: string): Promise<Transaction | undefined>;
 }
 
-export class DatabaseStorage implements IStorage {
-  // Exchange Rates
+export class MemStorage implements IStorage {
+  private rates: Map<number, ExchangeRate>;
+  private transactions: Map<number, Transaction>;
+  private rateId: number;
+  private transactionId: number;
+
+  constructor() {
+    this.rates = new Map();
+    this.transactions = new Map();
+    this.rateId = 1;
+    this.transactionId = 1;
+  }
+
   async getExchangeRates(): Promise<ExchangeRate[]> {
-    return await db.select().from(exchange_rates);
+    return Array.from(this.rates.values());
   }
 
-  async createExchangeRate(rate: InsertExchangeRate): Promise<ExchangeRate> {
-    const [newRate] = await db.insert(exchange_rates).values(rate).returning();
-    return newRate;
-  }
-
-  // Transactions
-  async createTransaction(transaction: InsertTransaction): Promise<Transaction> {
-    const [newTransaction] = await db.insert(transactions).values(transaction).returning();
-    return newTransaction;
+  async createExchangeRate(insertRate: InsertExchangeRate): Promise<ExchangeRate> {
+    const id = this.rateId++;
+    const rate: ExchangeRate = { 
+      ...insertRate, 
+      id, 
+      updatedAt: new Date(),
+      feePercent: insertRate.feePercent ?? "0",
+      minAmount: insertRate.minAmount ?? "0",
+      maxAmount: insertRate.maxAmount ?? "0"
+    };
+    this.rates.set(id, rate);
+    return rate;
   }
 
   async getTransactions(): Promise<Transaction[]> {
-    return await db.select().from(transactions).orderBy(desc(transactions.createdAt));
+    return Array.from(this.transactions.values()).sort((a, b) => 
+      (b.createdAt?.getTime() || 0) - (a.createdAt?.getTime() || 0)
+    );
   }
 
   async getTransaction(id: number): Promise<Transaction | undefined> {
-    const [transaction] = await db.select().from(transactions).where(eq(transactions.id, id));
+    return this.transactions.get(id);
+  }
+
+  async createTransaction(insertTx: InsertTransaction): Promise<Transaction> {
+    const id = this.transactionId++;
+    const transaction: Transaction = {
+      ...insertTx,
+      id,
+      status: "PENDING",
+      createdAt: new Date(),
+      userId: insertTx.userId ?? null,
+      paymentMethod: insertTx.paymentMethod ?? null,
+      paymentDetails: insertTx.paymentDetails ?? null,
+      proofUrl: insertTx.proofUrl ?? null
+    };
+    this.transactions.set(id, transaction);
     return transaction;
   }
 
   async updateTransactionStatus(id: number, status: string): Promise<Transaction | undefined> {
-    const [updated] = await db.update(transactions)
-      .set({ status })
-      .where(eq(transactions.id, id))
-      .returning();
+    const tx = this.transactions.get(id);
+    if (!tx) return undefined;
+    const updated = { ...tx, status };
+    this.transactions.set(id, updated);
     return updated;
   }
 }
 
-export const storage = new DatabaseStorage();
+export const storage = new MemStorage();

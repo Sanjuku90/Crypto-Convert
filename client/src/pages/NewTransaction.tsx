@@ -39,6 +39,14 @@ export default function NewTransaction() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (fromCurrency === 'XOF' && toCurrency === 'USDT') {
+      toast({ 
+        title: "Indisponible", 
+        description: "Les conversions XOF vers USDT seront de nouveau disponibles le 1er janvier.", 
+        variant: "destructive" 
+      });
+      return;
+    }
     if (!amount || !paymentDetails) {
       toast({ title: "Erreur", description: "Veuillez remplir tous les champs", variant: "destructive" });
       return;
@@ -137,7 +145,7 @@ export default function NewTransaction() {
               <label className="text-sm font-medium text-muted-foreground">Vous recevez (estimé)</label>
               <div className="flex gap-2">
                 <div className="flex-1 h-14 rounded-xl bg-muted/50 border flex items-center px-4 text-lg font-bold text-slate-600 dark:text-slate-300">
-                  {estimatedOutput}
+                  {fromCurrency === 'XOF' && toCurrency === 'USDT' ? "Indisponible" : estimatedOutput}
                 </div>
                 <select 
                   className="h-14 px-4 rounded-xl border bg-background font-bold min-w-[120px]"
@@ -149,6 +157,11 @@ export default function NewTransaction() {
                   ))}
                 </select>
               </div>
+              {fromCurrency === 'XOF' && toCurrency === 'USDT' && (
+                <p className="text-xs text-red-500 font-medium">
+                  Cette conversion sera de nouveau disponible le 1er janvier.
+                </p>
+              )}
             </div>
 
             {/* Info Fees */}
